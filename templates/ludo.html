@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ludo Game</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #e0f7fa;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .container {
+            background-color: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            width: 600px;
+        }
+
+        h1 {
+            color: #4caf50;
+        }
+
+        input[type="number"] {
+            padding: 10px;
+            margin: 10px 0;
+            width: 50%;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 2px solid #4caf50;
+        }
+
+        input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4caf50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+
+        .result {
+            margin-top: 20px;
+        }
+
+        .team {
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 5px;
+            color: white;
+        }
+
+        /* Team colors */
+        .team.red { background-color: #ff6961; }
+        .team.green { background-color: #77dd77; }
+        .team.blue { background-color: #aec6cf; }
+        .team.yellow { background-color: #fdfd96; }
+
+        /* Token as cones */
+        .token {
+            width: 0;
+            height: 0;
+            border-left: 15px solid transparent;
+            border-right: 15px solid transparent;
+            border-bottom: 30px solid;
+        }
+
+        .token.red { border-bottom-color: #ff6961; }
+        .token.green { border-bottom-color: #77dd77; }
+        .token.blue { border-bottom-color: #aec6cf; }
+        .token.yellow { border-bottom-color: #fdfd96; }
+        
+        .dice {
+            font-size: 50px;
+            cursor: pointer;
+            margin: 20px 0;
+        }
+
+        .dice-number {
+            font-size: 40px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        /* Board background */
+        .ludo-board {
+            display: grid;
+            grid-template-columns: repeat(11, 50px);
+            grid-template-rows: repeat(11, 50px);
+            gap: 2px;
+            margin: 30px 0;
+        }
+
+        .box {
+            width: 50px;
+            height: 50px;
+            background-color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 1px solid #ccc;
+        }
+
+        /* Safe box styling */
+        .safe-box {
+            background-color: #ffeb3b;
+        }
+
+        .team-home {
+            background-color: white;
+            border: 2px solid black;
+            text-align: center;
+            font-size: 12px;
+            color: black;
+        }
+
+        /* Team home colors */
+        .home-red { background-color: #ff6961; }
+        .home-green { background-color: #77dd77; }
+        .home-blue { background-color: #aec6cf; }
+        .home-yellow { background-color: #fdfd96; }
+        
+        .center-home {
+            grid-column: 5 / span 3;
+            grid-row: 5 / span 3;
+            background-color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Ludo Game</h1>
+        <form action="/play" method="POST">
+            <label for="players">Enter number of players:</label>
+            <input type="number" id="players" name="players" required min="1" max="4">
+            <input type="submit" value="Play">
+        </form>
+
+        {% if error %}
+            <p style="color: red;">{{ error }}</p>
+        {% endif %}
+
+        <div class="result">
+            {% if result %}
+                {% for res in result %}
+                    <div class="team {{ loop.index0|cycle(['red', 'green', 'blue', 'yellow']) }}">
+                        <h3>{{ res.team }}</h3>
+                        <p>Dice Roll 1: {{ res.dice_1 }}</p>
+                        {% if res.token_status %}
+                            <p>{{ res.token_status }}</p>
+                        {% endif %}
+                        {% if res.dice_2 %}
+                            <p>Dice Roll 2: {{ res.dice_2 }}</p>
+                        {% endif %}
+                        {% if res.dice_3 %}
+                            <p>Dice Roll 3: {{ res.dice_3 }}</p>
+                        {% endif %}
+                        {% if res.token_action %}
+                            <p>{{ res.token_action }}</p>
+                        {% endif %}
+                        <div class="token {{ loop.index0|cycle(['red', 'green', 'blue', 'yellow']) }}"></div>
+                    </div>
+                {% endfor %}
+            {% endif %}
+        </div>
+
+        <!-- Ludo Board -->
+        <div class="ludo-board">
+            <!-- Top-left home (Red) -->
+            <div class="box home-red"></div>
+            <div class="box home-red"></div>
+            <div class="box home-red"></div>
+            <div class="box home-red"></div>
+            <div class="box"></div>
+            <div class="box"></div>
+            <div class="box home-yellow"></div>
+            <div class="box home-yellow"></div>
+            <div class="box home-yellow"></div>
+            <div class="box home-yellow"></div>
+            <div class="box"></div>
+
+            <!-- Safe boxes and central home -->
+            <div class="box safe-box"></div>
+            <div class="box"></div>
+            <!-- Continue creating safe boxes and the Ludo board layout -->
+
+            <!-- Center Home -->
+            <div class="center-home">Ludo Center</div>
+        </div>
+    </div>
+</body>
+</html>
